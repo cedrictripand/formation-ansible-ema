@@ -149,9 +149,9 @@ ansible [core 2.15.13]
 ---
 
 Ces exercices couvrent différentes méthodes d'installation d'Ansible, en utilisant le gestionnaire de paquets, un PPA, et un environnement virtuel Python.
-## Partie 2: Ansible par la pratique (4) – Authentification
+# Partie 2: Ansible par la pratique (4) – Authentification
 
-# Exercice de Configuration et Connexion aux VMs Vagrant
+## Exercice de Configuration et Connexion aux VMs Vagrant
 
 ## Modification du fichier `/etc/hosts`
 

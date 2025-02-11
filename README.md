@@ -78,8 +78,12 @@ Connection to 127.0.0.1 closed.
 ```bash
 vagrant@ubuntu:~$ sudo apt-add-repository ppa:ansible/ansible
 ```
+3. **Installer ansible :**
+```bash
+vagrant@ubuntu:~$ sudo apt install ansible
+```
 
-3. **Vérifiez la version d'Ansible installée :**
+4. **Vérifiez la version d'Ansible installée :**
 
 ```bash
 vagrant@ubuntu:~$ ansible --version

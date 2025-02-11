@@ -1,3 +1,18 @@
+# Table des Matières
+
+1. [Partie 1: Ansible par la Pratique – Installation](#partie-1-ansible-par-la-pratique--installation)
+
+2. [Partie 2: Ansible par la pratique (4) – Authentification](#partie-2-ansible-par-la-pratique-4--authentification)
+
+---
+
+
+
+
+
+
+
+
 # Partie 1: Ansible par la Pratique – Installation
 
 ## Exercice 1 : Installation d'Ansible via le Gestionnaire de Paquets
@@ -149,6 +164,11 @@ ansible [core 2.15.13]
 ---
 
 Ces exercices couvrent différentes méthodes d'installation d'Ansible, en utilisant le gestionnaire de paquets, un PPA, et un environnement virtuel Python.
+
+---
+---
+---
+---
 # Partie 2: Ansible par la pratique (4) – Authentification
 
 ## Exercice de Configuration et Connexion aux VMs Vagrant

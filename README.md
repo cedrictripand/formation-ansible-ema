@@ -106,3 +106,9 @@ ansible [core 2.15.13]
   jinja version = 3.1.5
   libyaml = True
 ```
+
+---
+---
+---
+---
+## Partie 2: Ansible par la pratique (4) – Authentification

@@ -4,7 +4,7 @@
 
 2. [Partie 2: Ansible par la pratique (4) – Authentification](#partie-2-ansible-par-la-pratique-4--authentification)
 
-3. [Partie 3: Ansible par la pratique (5) – Direnv](#partie-3-ansible-par-la-pratique-5--direnv) 
+3. [Partie 3: Ansible par la pratique (6) – Configuration de base](#partie-3-ansible-par-la-pratique-6--configuration-de-base)
 ---
 
 
@@ -306,4 +306,5 @@ Toutes les étapes ont été réalisées avec succès, confirmant la configurati
 ---
 ---
 ---
-# Partie 3: Ansible par la pratique (5) – Direnv
+# Partie 3: Ansible par la pratique (6) – Configuration de base
+

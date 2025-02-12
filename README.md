@@ -5,6 +5,8 @@
 2. [Partie 2: Ansible par la pratique (4) – Authentification](#partie-2-ansible-par-la-pratique-4--authentification)
 
 3. [Partie 3: Ansible par la pratique (6) – Configuration de base](#partie-3-ansible-par-la-pratique-6--configuration-de-base)
+
+4. [Partie 4: Ansible par la pratique (8) – Idempotence](#partie-4-ansible-par-la-pratique-8--idempotence)
 ---
 
 
@@ -480,3 +482,8 @@ bin:*:19769:0:99999:7:::
 ---
 ---
 ---
+
+# Partie 4: Ansible par la pratique (8) – Idempotence
+
+## Exercice 
+

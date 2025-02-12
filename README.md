@@ -4,6 +4,7 @@
 
 2. [Partie 2: Ansible par la pratique (4) – Authentification](#partie-2-ansible-par-la-pratique-4--authentification)
 
+3. [Partie 3: Ansible par la pratique (5) – Direnv](#partie-3-ansible-par-la-pratique-5--direnv) 
 ---
 
 
@@ -299,3 +300,10 @@ target02 | SUCCESS => {
 ```
 
 Toutes les étapes ont été réalisées avec succès, confirmant la configuration correcte des VMs Vagrant.
+
+
+---
+---
+---
+---
+# Partie 3: Ansible par la pratique (5) – Direnv

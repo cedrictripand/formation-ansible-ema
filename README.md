@@ -308,3 +308,175 @@ Toutes les étapes ont été réalisées avec succès, confirmant la configurati
 ---
 # Partie 3: Ansible par la pratique (6) – Configuration de base
 
+## Exercice 
+
+Je lance les VMs Vagrant pour l'atelier 6 :
+```bash
+[ema@localhost:formation-ansible] $ cd atelier-06/
+[ema@localhost:atelier-06] $ vagrant up
+```
+Rajout dans /etc/hosts
+```plaintext
+192.168.56.10  control.sandbox.lan    control
+192.168.56.20  target01.sandbox.lan   target01
+192.168.56.30  target02.sandbox.lan   target02
+192.168.56.40  target03.sandbox.lan   target03
+```
+Je creer mes clefs ssh sur la machine control
+```bash 
+vagrant@control:~$ ssh-keygen
+```
+Je copie la clef publique sur les machines target01, target02 et target03
+```bash
+vagrant@control:~$ ssh-copy-id vagrant@target01
+```
+```bash
+vagrant@control:~$ ssh-copy-id vagrant@target02
+```
+```bash
+vagrant@control:~$ ssh-copy-id vagrant@target03
+```
+Installation d'Ansible sur la machine control
+```bash
+vagrant@control:~$ sudo apt install ansible
+```
+Ping avec Ansible
+```bash
+vagrant@control:~$ ansible all -i target01,target02,target03 -m ping
+target02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+target01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+target03 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
+Création d'un répertoire pour le projet
+```bash
+vagrant@control:~$ mkdir ~/monprojet
+vagrant@control:~$ cd ~/monprojet
+```
+Création d'un fichier de configuration Ansible
+```bash
+vagrant@control:~/monprojet$ mkdir /home/vagrant/journal/
+vagrant@control:~/monprojet$ touch /home/vagrant/journal/ansible.log
+vagrant@control:~$ nano ~/monprojet/ansible.cfg
+
+[defaults]
+inventory = ./hosts
+log_path = ~/journal/ansible.log
+```
+Vérification de la version d'Ansible
+```bash 
+vagrant@control:~/monprojet$ ansible --version | head -n 2
+ansible 2.10.8
+  config file = /home/vagrant/monprojet/ansible.cfg
+```
+Création du fichier hosts pour spécifier des Target Hosts 
+```bash 
+vagrant@control:~/monprojet$ nano hosts
+[testlab]
+target01
+target02
+target03
+
+[testlab:vars]
+ansible_user=vagrant
+```
+Vérification de la configuration avec le ping
+```bash 
+vagrant@control:~/monprojet$ ansible all -m ping
+target01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+target02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+target03 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
+Voici les logs d'Ansible
+```bash
+vagrant@control:~/monprojet$ cat ~/journal/ansible.log
+2025-02-12 09:57:12,870 p=3469 u=vagrant n=ansible | target01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+2025-02-12 09:57:12,893 p=3469 u=vagrant n=ansible | target02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+2025-02-12 09:57:12,900 p=3469 u=vagrant n=ansible | target03 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
+Rajout d'une commande pour pouvoir afficher les 3 premières lignes du fichier /etc/shadow
+```bash
+vagrant@control:~/monprojet$ nano hosts
+[testlab]
+target01
+target02
+target03
+
+[testlab:vars]
+ansible_user=vagrant
+ansible_become=yes
+```
+Voir les 3 premières lignes du fichier /etc/shadow des machines target01, target02 et target03
+```bash
+vagrant@control:~/monprojet$ ansible all -a "head -n 3 /etc/shadow"
+target01 | CHANGED | rc=0 >>
+root:*:19769:0:99999:7:::
+daemon:*:19769:0:99999:7:::
+bin:*:19769:0:99999:7:::
+target02 | CHANGED | rc=0 >>
+root:*:19769:0:99999:7:::
+daemon:*:19769:0:99999:7:::
+bin:*:19769:0:99999:7:::
+target03 | CHANGED | rc=0 >>
+root:*:19769:0:99999:7:::
+daemon:*:19769:0:99999:7:::
+bin:*:19769:0:99999:7:::
+```
+
+---
+---
+---
+---

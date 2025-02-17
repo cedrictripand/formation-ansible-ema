@@ -8,7 +8,7 @@
 
 4. [Partie 4: Ansible par la pratique (8) – Idempotence](#partie-4-ansible-par-la-pratique-8--idempotence)
 
-5. [Partie 5: Ansible par la pratique (9) – Playbooks](#partie-5-ansible-par-la-pratique-9--playbooks)
+5. [ Partie 5: Ansible par la pratique (10) – Un serveur web simple](#partie-5-ansible-par-la-pratique-10--un-serveur-web-simple)
 ---
 
 
@@ -637,7 +637,7 @@ Filesystem                  Size  Used Avail Use% Mounted on
 ---
 ---
 
-# Partie 5: Ansible par la pratique (9) – Playbooks
+# Partie 5: Ansible par la pratique (10) – Un serveur web simple
 
 ## Exercice
 

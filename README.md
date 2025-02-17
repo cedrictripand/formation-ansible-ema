@@ -651,9 +651,9 @@ Voici les quatre machines virtuelles de cet atelier :
 ```bash
 Machine virtuelle 	Adresse IP
 ansible 	        192.168.56.10
-rocky 	            192.168.56.20
-debian 	            192.168.56.30
-suse 	            192.168.56.40
+rocky 	                192.168.56.20
+debian 	                192.168.56.30
+suse 	                192.168.56.40
 ```
 Démarrez les VM :
 ```bash

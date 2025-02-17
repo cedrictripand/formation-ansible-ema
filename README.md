@@ -487,3 +487,147 @@ bin:*:19769:0:99999:7:::
 
 ## Exercice 
 
+Je lance les VMs Vagrant pour l'atelier 7 :
+```bash
+[ema@localhost:atelier-07] $ vagrant up
+```
+Je me connecte à la machine ansible
+```bash
+[ema@localhost:atelier-07] $ vagrant ssh ansible
+```
+
+
+Installation de tree, git, nmap sur les machines target01, target02 et target03
+```bash 
+[vagrant@ansible ~]$ cd ansible/projets/ema/
+[vagrant@ansible ema]$ ansible testing -m package -a "name=tree,git,nmap state=present"
+```
+J'obtiens des success mais les reponses sont trop verbeuses
+
+
+Désinstaller successivement ces trois paquets en utilisant le paramètre supplémentaire state=absent 
+```
+[vagrant@ansible ema]$ ansible testing -m package -a "name=tree,git,nmap state=absent"
+```
+Au deuxième run de la commande :
+```bash
+[vagrant@ansible ema]$ ansible testing -m package -a "name=tree,git,nmap state=absent"
+debian | SUCCESS => {
+    "changed": false
+}
+suse | SUCCESS => {
+    "changed": false,
+    "name": [
+        "tree",
+        "git",
+        "nmap"
+    ],
+    "rc": 0,
+    "state": "absent",
+    "update_cache": false
+}
+rocky | SUCCESS => {
+    "changed": false,
+    "msg": "Nothing to do",
+    "rc": 0,
+    "results": []
+}
+
+```
+
+Copier le fichier /etc/fstab du Control Host vers tous les Target Hosts sous forme d’un fichier /tmp/test3.txt :
+```bash
+[vagrant@ansible ema]$ ansible testing -m copy -a "src=/etc/fstab dest=/tmp/test3.txt"
+debian | SUCCESS => {
+    "changed": false,
+    "checksum": "d39263691e31170df199aae3d93f7c556fbb3446",
+    "dest": "/tmp/test3.txt",
+    "gid": 0,
+    "group": "root",
+    "mode": "0644",
+    "owner": "root",
+    "path": "/tmp/test3.txt",
+    "size": 743,
+    "state": "file",
+    "uid": 0
+}
+rocky | SUCCESS => {
+    "changed": false,
+    "checksum": "d39263691e31170df199aae3d93f7c556fbb3446",
+    "dest": "/tmp/test3.txt",
+    "gid": 0,
+    "group": "root",
+    "mode": "0644",
+    "owner": "root",
+    "path": "/tmp/test3.txt",
+    "secontext": "unconfined_u:object_r:user_home_t:s0",
+    "size": 743,
+    "state": "file",
+    "uid": 0
+}
+suse | SUCCESS => {
+    "changed": false,
+    "checksum": "d39263691e31170df199aae3d93f7c556fbb3446",
+    "dest": "/tmp/test3.txt",
+    "gid": 0,
+    "group": "root",
+    "mode": "0644",
+    "owner": "root",
+    "path": "/tmp/test3.txt",
+    "size": 743,
+    "state": "file",
+    "uid": 0
+}
+
+```
+Sur le deuxieme run de la commande aucune modification n'est effectuée. 
+
+Supprimer le fichier /tmp/test3.txt 
+```bash 
+[vagrant@ansible ema]$ ansible testing -m file -a "dest=/tmp/test3.txt state=absent"
+debian | CHANGED => {
+    "changed": true,
+    "path": "/tmp/test3.txt",
+    "state": "absent"
+}
+suse | CHANGED => {
+    "changed": true,
+    "path": "/tmp/test3.txt",
+    "state": "absent"
+}
+rocky | CHANGED => {
+    "changed": true,
+    "path": "/tmp/test3.txt",
+    "state": "absent"
+}
+[vagrant@ansible ema]$ ansible testing -m file -a "dest=/tmp/test3.txt state=absent"
+debian | SUCCESS => {
+    "changed": false,
+    "path": "/tmp/test3.txt",
+    "state": "absent"
+}
+suse | SUCCESS => {
+    "changed": false,
+    "path": "/tmp/test3.txt",
+    "state": "absent"
+}
+rocky | SUCCESS => {
+    "changed": false,
+    "path": "/tmp/test3.txt",
+    "state": "absent"
+}
+```
+
+Afficher l’espace utilisé par la partition principale sur tous les Target Hosts. 
+```bash
+[vagrant@ansible ema]$ ansible testing -m shell -a "df -h /"
+debian | CHANGED | rc=0 >>
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3       124G  2.3G  115G   2% /
+suse | CHANGED | rc=0 >>
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3       124G  2.8G  118G   3% /
+rocky | CHANGED | rc=0 >>
+Filesystem                  Size  Used Avail Use% Mounted on
+/dev/mapper/rl_rocky9-root   70G  2.4G   68G   4% /
+```

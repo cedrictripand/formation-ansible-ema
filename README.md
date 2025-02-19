@@ -11,6 +11,8 @@
 5. [ Partie 5: Ansible par la pratique (10) – Un serveur web simple](#partie-5-ansible-par-la-pratique-10--un-serveur-web-simple)
 
 6. [Partie 6: Ansible par la pratique (11) – Handler](#partie-6-ansible-par-la-pratique-11--handler)
+
+7. [Partie 7: Ansible par la pratique (12) – Gestion des erreurs](#partie-7-ansible-par-la-pratique-12--gestion-des-erreurs)
 ---
 
 
@@ -858,11 +860,6 @@ Voici quelques pistes de réflexion :
 ## Exercice
 
 
-Placez-vous dans le répertoire du douzième atelier pratique :
-```bash
-cd ~/formation-ansible/atelier-12
-```
-
 ```bash
 Machine virtuelle 	Adresse IP
 control 	        192.168.56.10
@@ -1041,3 +1038,130 @@ target01                   : ok=7    changed=4    unreachable=0    failed=0    s
 target02                   : ok=7    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 target03                   : ok=7    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0 
 ```
+
+---
+---
+---
+
+# Partie 7: Ansible par la pratique (12) – Variables
+
+## Exercice
+
+```bash
+Machine virtuelle 	Adresse IP
+control 	192.168.56.10
+target01 	192.168.56.20
+target02 	192.168.56.30
+target03 	192.168.56.40
+```
+C'est des VMs Vagrant ( Rocky ), je les lance :
+```bash
+ vagrant up
+```
+
+
+```bash
+cd ansible/projets/ema/
+direnv: loading ~/ansible/projets/ema/.envrc
+direnv: export +ANSIBLE_CONFIG
+ls -l
+total 8
+-rw-r--r--. 1 vagrant vagrant  65 Sep 19 14:26 ansible.cfg
+-rw-r--r--. 1 vagrant vagrant 128 Sep 19 14:26 inventory
+drwxr-xr-x. 2 vagrant vagrant   6 Sep 19 14:26 playbooks
+```
+
+Voici le contenu du playbook myvars1.yml qui affiche les variables mycar et mybike :
+```yaml
+            ---
+        - name: Afficher voiture et moto préférées
+        hosts: localhost
+        vars:
+            mycar: "Renault"
+            mybike: "KTM"
+        tasks:
+            - name: Afficher les variables
+            debug:
+                msg: "Ma voiture préférée est {{ mycar }} et ma moto préférée est {{ mybike }}."
+```
+Voici le contenu du playbook myvars2.yml qui affiche les variables mycar et mybike avec set_fact :
+```yaml
+---
+- name: Afficher voiture et moto préférées avec set_fact
+  hosts: localhost
+  tasks:
+    - name: Définir les variables
+      set_fact:
+        mycar: "Renault"
+        mybike: "KTM"
+
+    - name: Afficher les variables
+      debug:
+        msg: "Ma voiture préférée est {{ mycar }} et ma moto préférée est {{ mybike }}."
+```
+
+Voici le contenu du playbook myvars3.yml qui affiche les variables mycar et mybike sans les définir :
+```yaml
+[all:vars]
+mycar=Renault
+mybike=KTM
+
+[target02:vars]
+mycar=Mercedes
+mybike=Suzuki
+```
+```yaml
+---
+- name: Afficher voiture et moto préférées sans les définir
+  hosts: all
+  tasks:
+    - name: Afficher les variables
+      debug:
+        msg: "Ma voiture préférée est {{ mycar }} et ma moto préférée est {{ mybike }}."
+
+```
+
+Voici le contenu du playbook display_user.yml qui affiche un utilisateur et son mot de passe :
+
+```yaml
+---
+- name: Afficher utilisateur et mot de passe
+  hosts: localhost
+  vars_prompt:
+    - name: "user"
+      prompt: "Entrez le nom d'utilisateur"
+      default: "microlinux"
+      private: no
+
+    - name: "password"
+      prompt: "Entrez le mot de passe"
+      default: "yatahongaga"
+      private: yes
+
+  tasks:
+    - name: Afficher les informations
+      debug:
+        msg: "Utilisateur : {{ user }}, Mot de passe : {{ password }}"
+
+```
+Voici le résultat de l'exécution du playbook display_user.yml, il garde la valeur par défaut car je n'ai pas entré de valeur : 
+```bash
+
+[vagrant@control playbooks]$ ansible-playbook display_user.yml 
+Entrez le nom d'utilisateur [microlinux]: test
+Entrez le mot de passe [yatahongaga]: 
+
+PLAY [Afficher utilisateur et mot de passe] **************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] ***********************************************************************************************************************************************************************************************
+ok: [localhost]
+
+TASK [Afficher les informations] *************************************************************************************************************************************************************************************
+ok: [localhost] => {
+    "msg": "Utilisateur : test, Mot de passe : yatahongaga"
+}
+
+PLAY RECAP ***********************************************************************************************************************************************************************************************************
+localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
+

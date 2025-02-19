@@ -14,7 +14,7 @@
 
 7. [Partie 7: Ansible par la pratique (12) – Variables](#partie-7-ansible-par-la-pratique-12--variables)
 
-8. [Partie 8: Ansible par la pratique (14) – Playbooks](#partie-8-ansible-par-la-pratique-14--playbooks)
+8. [Partie 8: Ansible par la pratique (13) – Variables enregistrées](#partie-8-ansible-par-la-pratique-13--variables-enregistrées)
 ---
 
 

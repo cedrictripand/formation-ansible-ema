@@ -1049,10 +1049,10 @@ target03                   : ok=7    changed=4    unreachable=0    failed=0    s
 
 ```bash
 Machine virtuelle 	Adresse IP
-control 	192.168.56.10
-target01 	192.168.56.20
-target02 	192.168.56.30
-target03 	192.168.56.40
+control 	        192.168.56.10
+target01 	        192.168.56.20
+target02 	        192.168.56.30
+target03 	        192.168.56.40
 ```
 C'est des VMs Vagrant ( Rocky ), je les lance :
 ```bash
@@ -1146,7 +1146,6 @@ Voici le contenu du playbook display_user.yml qui affiche un utilisateur et son 
 ```
 Voici le résultat de l'exécution du playbook display_user.yml, il garde la valeur par défaut car je n'ai pas entré de valeur : 
 ```bash
-
 [vagrant@control playbooks]$ ansible-playbook display_user.yml 
 Entrez le nom d'utilisateur [microlinux]: test
 Entrez le mot de passe [yatahongaga]: 

@@ -1358,9 +1358,6 @@ Je creer un playbook info-python-version.yml qui affiche la version de Python in
 ```
 
 
-```bash
-ansible-playbook info-python-version.yml
-```
 Voici le résultat de l'exécution du playbook info-python-version.yml :
 
 ```bash

@@ -13,6 +13,8 @@
 6. [Partie 6: Ansible par la pratique (11) – Handler](#partie-6-ansible-par-la-pratique-11--handler)
 
 7. [Partie 7: Ansible par la pratique (12) – Variables](#partie-7-ansible-par-la-pratique-12--variables)
+
+8. [Partie 8: Ansible par la pratique (14) – Playbooks](#partie-8-ansible-par-la-pratique-14--playbooks)
 ---
 
 
@@ -27,12 +29,7 @@
 ## Exercice 1 : Installation d'Ansible via le Gestionnaire de Paquets
 
 1. **Vérifiez l'état des VMs Vagrant :**
-
-```bash
-[ema@localhost:atelier-01] $ vagrant global-status
-id       name   provider   state   directory
-------------------------------------------------------------------------------------------
-3412b33  rocky  virtualbox running /home/ema/Téléchargements/formation-ansible/atelier-01
+[vagrant@ansible playbooks]$ acky  virtualbox running /home/ema/Téléchargements/formation-ansible/atelier-01
 139bf52  debian virtualbox running /home/ema/Téléchargements/formation-ansible/atelier-01
 ffca520  suse   virtualbox running /home/ema/Téléchargements/formation-ansible/atelier-01
 bbda369  ubuntu virtualbox running /home/ema/Téléchargements/formation-ansible/atelier-01
@@ -1164,3 +1161,136 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 ```
 
+---
+---
+---
+
+# Partie 8: Ansible par la pratique (13) – Variables enregistrées
+
+## Exercice
+
+Go dans le répertoire playbook :
+```bash
+cd ansible/projets/ema/playbooks/
+```
+
+
+Voici le contenu du playbook kernel.yml qui enregistre la date et l'heure actuelles dans la variable current_time :
+
+```yml
+---
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: Récupérer les informations du noyau avec uname -a
+      command: uname -a
+      register: kernel_info
+      changed_when: false
+
+    - name: Afficher les infos du noyau avec debug msg
+      debug:
+        msg: "Kernel info: {{ kernel_info.stdout }}"
+
+    - name: Afficher les infos du noyau avec debug var
+      debug:
+        var: kernel_info.stdout_lines
+```
+
+
+```bash
+ansible-playbook kernel.yml
+```
+Voici le résultat de l'exécution du playbook kernel.yml :
+
+```bash
+[vagrant@ansible playbooks]$ ansible-playbook kernel.yml
+
+PLAY [all] ************************************************************************************************************************
+
+TASK [Récupérer les informations du noyau avec uname -a] **************************************************************************
+ok: [debian]
+ok: [rocky]
+ok: [suse]
+
+TASK [Afficher les infos du noyau avec debug msg] *********************************************************************************
+ok: [rocky] => {
+    "msg": "Kernel info: Linux rocky 5.14.0-362.13.1.el9_3.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Dec 13 14:07:45 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux"
+}
+ok: [debian] => {
+    "msg": "Kernel info: Linux debian 6.1.0-17-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.69-1 (2023-12-30) x86_64 GNU/Linux"
+}
+ok: [suse] => {
+    "msg": "Kernel info: Linux suse 5.14.21-150500.55.39-default #1 SMP PREEMPT_DYNAMIC Tue Dec 5 10:06:35 UTC 2023 (2e4092e) x86_64 x86_64 x86_64 GNU/Linux"
+}
+
+TASK [Afficher les infos du noyau avec debug var] *********************************************************************************
+ok: [rocky] => {
+    "kernel_info.stdout_lines": [
+        "Linux rocky 5.14.0-362.13.1.el9_3.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Dec 13 14:07:45 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux"
+    ]
+}
+ok: [debian] => {
+    "kernel_info.stdout_lines": [
+        "Linux debian 6.1.0-17-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.69-1 (2023-12-30) x86_64 GNU/Linux"
+    ]
+}
+ok: [suse] => {
+    "kernel_info.stdout_lines": [
+        "Linux suse 5.14.21-150500.55.39-default #1 SMP PREEMPT_DYNAMIC Tue Dec 5 10:06:35 UTC 2023 (2e4092e) x86_64 x86_64 x86_64 GNU/Linux"
+    ]
+}
+
+PLAY RECAP ************************************************************************************************************************
+debian                     : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+rocky                      : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+suse                       : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
+
+Je creer un playbook packages.yml qui compte le nombre total de paquets RPM installés sur les machines rocky et suse :
+
+```yml
+---
+- hosts: rocky,suse
+  gather_facts: false
+  tasks:
+    - name: Compter le nombre total de paquets RPM installés
+      shell: "rpm -qa | wc -l"
+      register: rpm_count
+      changed_when: false
+
+    - name: Afficher le nombre total de paquets RPM installés
+      debug:
+        msg: "Nombre total de paquets RPM: {{ rpm_count.stdout | trim }}"
+```
+```bash
+ansible-playbook packages.yml
+```
+
+Voici le résultat de l'exécution du playbook packages.yml :
+
+```bash
+[vagrant@ansible playbooks]$ ansible-playbook packages.yml
+
+PLAY [rocky,suse] *****************************************************************************************************************
+
+TASK [Compter le nombre total de paquets RPM installés] ***************************************************************************
+ok: [rocky]
+ok: [suse]
+
+TASK [Afficher le nombre total de paquets RPM installés] **************************************************************************
+ok: [rocky] => {
+    "msg": "Nombre total de paquets RPM: 671"
+}
+ok: [suse] => {
+    "msg": "Nombre total de paquets RPM: 917"
+}
+
+PLAY RECAP ************************************************************************************************************************
+rocky                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+suse                       : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+```
+
+---
+---
+---

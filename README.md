@@ -1073,16 +1073,16 @@ drwxr-xr-x. 2 vagrant vagrant   6 Sep 19 14:26 playbooks
 
 Voici le contenu du playbook myvars1.yml qui affiche les variables mycar et mybike :
 ```yaml
-            ---
-        - name: Afficher voiture et moto préférées
-        hosts: localhost
-        vars:
-            mycar: "Renault"
-            mybike: "KTM"
-        tasks:
-            - name: Afficher les variables
-            debug:
-                msg: "Ma voiture préférée est {{ mycar }} et ma moto préférée est {{ mybike }}."
+---
+- name: Afficher voiture et moto préférées
+  hosts: localhost
+  vars:
+      mycar: "Renault"
+      mybike: "KTM"
+  tasks:
+      - name: Afficher les variables
+      debug:
+          msg: "Ma voiture préférée est {{ mycar }} et ma moto préférée est {{ mybike }}."
 ```
 Voici le contenu du playbook myvars2.yml qui affiche les variables mycar et mybike avec set_fact :
 ```yaml

@@ -16,7 +16,7 @@
 
 8. [Partie 8: Ansible par la pratique (13) – Variables enregistrées](#partie-8-ansible-par-la-pratique-13--variables-enregistrées)
 
-9. [Partie 9: Partie 9: Ansible par la pratique (14) – Facts et variables implicites](#partie-9-partie-9-ansible-par-la-pratique-14--facts-et-variables-implicites)
+9. [Partie 9: Ansible par la pratique (14) – Facts et variables implicites](#partie-9-ansible-par-la-pratique-14--facts-et-variables-implicites)
 ---
 
 

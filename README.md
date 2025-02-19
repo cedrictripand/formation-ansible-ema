@@ -15,6 +15,8 @@
 7. [Partie 7: Ansible par la pratique (12) – Variables](#partie-7-ansible-par-la-pratique-12--variables)
 
 8. [Partie 8: Ansible par la pratique (13) – Variables enregistrées](#partie-8-ansible-par-la-pratique-13--variables-enregistrées)
+
+9. [Partie 9: Partie 9: Ansible par la pratique (14) – Facts et variables implicites](#partie-9-partie-9-ansible-par-la-pratique-14--facts-et-variables-implicites)
 ---
 
 
@@ -1294,3 +1296,137 @@ suse                       : ok=2    changed=0    unreachable=0    failed=0    s
 ---
 ---
 ---
+
+# Partie 9: Ansible par la pratique (14) – Facts et variables implicites
+
+## Exercice
+
+Go dans le répertoire playbook :
+```bash
+cd ansible/projets/ema/playbooks/
+```
+
+Je creer un playbook info-packages.yml qui affiche les informations sur le gestionnaire de paquets utilisé :
+```yml
+---
+- hosts: all
+  tasks:
+    - name: Afficher le gestionnaire de paquets utilisé
+      debug:
+        msg: "Le host {{ inventory_hostname }} utilise le gestionnaire de paquets: {{ ansible_pkg_mgr }}"
+```
+
+
+Voici le résultat de l'exécution du playbook info-packages.yml :
+
+```bash
+[vagrant@ansible playbooks]$ ansible-playbook info-packages.yml
+
+PLAY [all] ************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************
+ok: [debian]
+ok: [rocky]
+ok: [suse]
+
+TASK [Afficher le gestionnaire de paquets utilisé] ********************************************************************************
+ok: [rocky] => {
+    "msg": "Le host rocky utilise le gestionnaire de paquets: dnf"
+}
+ok: [debian] => {
+    "msg": "Le host debian utilise le gestionnaire de paquets: apt"
+}
+ok: [suse] => {
+    "msg": "Le host suse utilise le gestionnaire de paquets: zypper"
+}
+
+PLAY RECAP ************************************************************************************************************************
+debian                     : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+rocky                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+suse                       : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
+
+
+Je creer un playbook info-python-version.yml qui affiche la version de Python installée sur toutes les machines :
+```yml
+---
+- hosts: all
+  tasks:
+    - name: Afficher la version de Python installée
+      debug:
+        msg: "Host {{ inventory_hostname }} utilise Python version: {{ ansible_python.version.major }}.{{ ansible_python.version.minor }}.{{ ansible_python.version.micro }}"
+```
+
+
+```bash
+ansible-playbook info-python-version.yml
+```
+Voici le résultat de l'exécution du playbook info-python-version.yml :
+
+```bash
+[vagrant@ansible playbooks]$ ansible-playbook info-python-version.yml
+
+PLAY [all] ************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************
+ok: [debian]
+ok: [rocky]
+ok: [suse]
+
+TASK [Afficher la version de Python installée] ************************************************************************************
+ok: [rocky] => {
+    "msg": "Host rocky utilise Python version: 3.9.18"
+}
+ok: [debian] => {
+    "msg": "Host debian utilise Python version: 3.11.2"
+}
+ok: [suse] => {
+    "msg": "Host suse utilise Python version: 3.6.15"
+}
+
+PLAY RECAP ************************************************************************************************************************
+debian                     : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+rocky                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+suse                       : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
+
+
+Je cree un playbook dns-check.yml qui affiche les serveurs DNS configurés sur toutes les machines :
+```yml
+---
+- hosts: all
+  tasks:
+    - name: Afficher les serveurs DNS configurés
+      debug:
+        msg: "Host {{ inventory_hostname }} utilise les serveurs DNS: {{ ansible_dns.nameservers }}"
+```
+
+Voici le résultat de l'exécution du playbook dns-check.yml :
+
+```bash
+[vagrant@ansible playbooks]$ ansible-playbook dns-check.yml
+
+PLAY [all] ************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************
+ok: [debian]
+ok: [suse]
+ok: [rocky]
+
+TASK [Afficher les serveurs DNS configurés] ***************************************************************************************
+ok: [rocky] => {
+    "msg": "Host rocky utilise les serveurs DNS: ['10.0.2.3']"
+}
+ok: [debian] => {
+    "msg": "Host debian utilise les serveurs DNS: ['4.2.2.1', '4.2.2.2', '208.67.220.220']"
+}
+ok: [suse] => {
+    "msg": "Host suse utilise les serveurs DNS: ['10.0.2.3']"
+}
+
+PLAY RECAP ************************************************************************************************************************
+debian                     : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+rocky                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+suse                       : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
+

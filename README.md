@@ -1130,12 +1130,12 @@ Voici le contenu du playbook display_user.yml qui affiche un utilisateur et son 
   vars_prompt:
     - name: "user"
       prompt: "Entrez le nom d'utilisateur"
-      default: "microlinux"
+      default: "kiki"
       private: no
 
     - name: "password"
       prompt: "Entrez le mot de passe"
-      default: "yatahongaga"
+      default: "ansiblelife"
       private: yes
 
   tasks:
@@ -1147,8 +1147,8 @@ Voici le contenu du playbook display_user.yml qui affiche un utilisateur et son 
 Voici le résultat de l'exécution du playbook display_user.yml, il garde la valeur par défaut car je n'ai pas entré de valeur : 
 ```bash
 [vagrant@control playbooks]$ ansible-playbook display_user.yml 
-Entrez le nom d'utilisateur [microlinux]: test
-Entrez le mot de passe [yatahongaga]: 
+Entrez le nom d'utilisateur [kiki]: test
+Entrez le mot de passe [ansiblelife]:
 
 PLAY [Afficher utilisateur et mot de passe] **************************************************************************************************************************************************************************
 
@@ -1157,7 +1157,7 @@ ok: [localhost]
 
 TASK [Afficher les informations] *************************************************************************************************************************************************************************************
 ok: [localhost] => {
-    "msg": "Utilisateur : test, Mot de passe : yatahongaga"
+    "msg": "Utilisateur : test, Mot de passe : ansiblelife"
 }
 
 PLAY RECAP ***********************************************************************************************************************************************************************************************************

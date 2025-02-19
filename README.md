@@ -12,7 +12,7 @@
 
 6. [Partie 6: Ansible par la pratique (11) – Handler](#partie-6-ansible-par-la-pratique-11--handler)
 
-7. [Partie 7: Ansible par la pratique (12) – Variables](#partie-7-ansible-par-la-pratique-12--variables)Table des Matieres
+7. [Partie 7: Ansible par la pratique (12) – Variables](#partie-7-ansible-par-la-pratique-12--variables)
 ---
 
 

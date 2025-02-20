@@ -17,6 +17,8 @@
 8. [Partie 8: Ansible par la pratique (13) – Variables enregistrées](#partie-8-ansible-par-la-pratique-13--variables-enregistrées)
 
 9. [Partie 9: Ansible par la pratique (14) – Facts et variables implicites](#partie-9-ansible-par-la-pratique-14--facts-et-variables-implicites)
+
+10. [Partie 10:Ansible par la pratique (15) – Cibles hétérogènes](#partie-10ansible-par-la-pratique-15--cibles-hétérogènes)
 ---
 
 
@@ -1425,5 +1427,289 @@ PLAY RECAP *********************************************************************
 debian                     : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 rocky                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 suse                       : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
+
+
+# Partie 10:Ansible par la pratique (15) – Cibles hétérogènes
+
+## Exercice
+
+Go dans le répertoire playbook :
+```bash
+cd ansible/projets/ema/playbooks/
+```
+
+Je creer un playbook chrony-01.yml qui installe et configure Chrony sur les machines Debian/Ubuntu, Rocky Linux et openSUSE Leap :
+```yml
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Update cache on Debian/Ubuntu
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+
+    - name: Install Chrony on Debian/Ubuntu
+      apt:
+        name: chrony
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install Chrony on Rocky Linux
+      dnf:
+        name: chrony
+        state: present
+      when: ansible_distribution == "Rocky"
+
+    - name: Install Chrony on openSUSE Leap
+      zypper:
+        name: chrony
+        state: present
+      when: ansible_distribution == "openSUSE Leap"
+
+    - name: Copy Chrony configuration on Debian/Ubuntu
+      copy:
+        dest: /etc/chrony/chrony.conf
+        mode: '0644'
+        content: |
+          server 0.fr.pool.ntp.org iburst
+          server 1.fr.pool.ntp.org iburst
+          server 2.fr.pool.ntp.org iburst
+          server 3.fr.pool.ntp.org iburst
+          driftfile /var/lib/chrony/drift
+          makestep 1.0 3
+          rtcsync
+          logdir /var/log/chrony
+      when: ansible_os_family == "Debian"
+      notify: Restart Chrony service
+
+    - name: Copy Chrony configuration on Rocky/openSUSE Leap
+      copy:
+        dest: /etc/chrony.conf
+        mode: '0644'
+        content: |
+          server 0.fr.pool.ntp.org iburst
+          server 1.fr.pool.ntp.org iburst
+          server 2.fr.pool.ntp.org iburst
+          server 3.fr.pool.ntp.org iburst
+          driftfile /var/lib/chrony/drift
+          makestep 1.0 3
+          rtcsync
+          logdir /var/log/chrony
+      when: ansible_distribution in ["Rocky", "openSUSE Leap"]
+      notify: Restart Chrony service
+
+    - name: Start and enable Chrony on Debian/Ubuntu
+      service:
+        name: chrony
+        state: started
+        enabled: true
+      when: ansible_os_family == "Debian"
+
+    - name: Start and enable Chrony on Rocky/openSUSE Leap
+      service:
+        name: chronyd
+        state: started
+        enabled: true
+      when: ansible_distribution in ["Rocky", "openSUSE Leap"]
+
+  handlers:
+    - name: Restart Chrony service
+      service:
+        name: "{{ 'chrony' if ansible_os_family == 'Debian' else 'chronyd' }}"
+        state: restarted
+```
+
+Voici le résultat de l'exécution du playbook chrony-01.yml :
+```bash
+[vagrant@ansible playbooks]$ ansible-playbook chrony-01.yml
+
+PLAY [all] ************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************
+ok: [debian]
+ok: [suse]
+ok: [rocky]
+ok: [ubuntu]
+
+TASK [Update cache on Debian/Ubuntu] **********************************************************************************************
+skipping: [rocky]
+skipping: [suse]
+ok: [ubuntu]
+changed: [debian]
+
+TASK [Install Chrony on Debian/Ubuntu] ********************************************************************************************
+skipping: [rocky]
+skipping: [suse]
+changed: [debian]
+changed: [ubuntu]
+
+TASK [Install Chrony on Rocky Linux] **********************************************************************************************
+skipping: [suse]
+skipping: [debian]
+skipping: [ubuntu]
+ok: [rocky]
+
+TASK [Install Chrony on openSUSE Leap] ********************************************************************************************
+skipping: [rocky]
+skipping: [debian]
+skipping: [ubuntu]
+changed: [suse]
+
+TASK [Copy Chrony configuration on Debian/Ubuntu] *********************************************************************************
+skipping: [rocky]
+skipping: [suse]
+changed: [debian]
+changed: [ubuntu]
+
+TASK [Copy Chrony configuration on Rocky/openSUSE Leap] ***************************************************************************
+skipping: [debian]
+skipping: [ubuntu]
+changed: [suse]
+changed: [rocky]
+
+TASK [Start and enable Chrony on Debian/Ubuntu] ***********************************************************************************
+skipping: [rocky]
+skipping: [suse]
+ok: [ubuntu]
+ok: [debian]
+
+TASK [Start and enable Chrony on Rocky/openSUSE Leap] *****************************************************************************
+skipping: [debian]
+skipping: [ubuntu]
+ok: [rocky]
+changed: [suse]
+
+RUNNING HANDLER [Restart Chrony service] ******************************************************************************************
+changed: [debian]
+changed: [ubuntu]
+changed: [rocky]
+changed: [suse]
+
+PLAY RECAP ************************************************************************************************************************
+debian                     : ok=6    changed=4    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
+rocky                      : ok=5    changed=2    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0   
+suse                       : ok=5    changed=4    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0   
+ubuntu                     : ok=6    changed=3    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
+
+```
+
+Je creer un playbook chrony-02.yml qui installe et configure Chrony sur les machines Debian/Ubuntu, Rocky Linux et openSUSE Leap :
+```yml
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Set Chrony variables for Debian/Ubuntu
+      set_fact:
+        chrony_package: chrony
+        chrony_service: chrony
+        chrony_confdir: /etc/chrony
+      when: ansible_os_family == "Debian"
+
+    - name: Set Chrony variables for Rocky Linux
+      set_fact:
+        chrony_package: chrony
+        chrony_service: chronyd
+        chrony_confdir: /etc
+      when: ansible_distribution == "Rocky"
+
+    - name: Set Chrony variables for openSUSE Leap
+      set_fact:
+        chrony_package: chrony
+        chrony_service: chronyd
+        chrony_confdir: /etc
+      when: ansible_distribution == "openSUSE Leap"
+
+    - name: Install Chrony using generic package module
+      package:
+        name: "{{ chrony_package }}"
+        state: present
+
+    - name: Copy Chrony configuration file
+      copy:
+        dest: "{{ chrony_confdir }}/chrony.conf"
+        mode: '0644'
+        content: |
+          server 0.fr.pool.ntp.org iburst
+          server 1.fr.pool.ntp.org iburst
+          server 2.fr.pool.ntp.org iburst
+          server 3.fr.pool.ntp.org iburst
+          driftfile /var/lib/chrony/drift
+          makestep 1.0 3
+          rtcsync
+          logdir /var/log/chrony
+      notify: Restart Chrony service
+
+    - name: Start and enable Chrony service
+      service:
+        name: "{{ chrony_service }}"
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Restart Chrony service
+      service:
+        name: "{{ chrony_service }}"
+        state: restarted
+```
+
+Voici le résult de l'exécution du playbook chrony-02.yml :
+```bash
+[vagrant@ansible playbooks]$ ansible-playbook chrony-02.yml
+
+PLAY [all] ************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************
+ok: [debian]
+ok: [suse]
+ok: [ubuntu]
+ok: [rocky]
+
+TASK [Set Chrony variables for Debian/Ubuntu] *************************************************************************************
+skipping: [rocky]
+ok: [debian]
+skipping: [suse]
+ok: [ubuntu]
+
+TASK [Set Chrony variables for Rocky Linux] ***************************************************************************************
+ok: [rocky]
+skipping: [debian]
+skipping: [suse]
+skipping: [ubuntu]
+
+TASK [Set Chrony variables for openSUSE Leap] *************************************************************************************
+skipping: [rocky]
+skipping: [debian]
+ok: [suse]
+skipping: [ubuntu]
+
+TASK [Install Chrony using generic package module] ********************************************************************************
+ok: [suse]
+ok: [debian]
+ok: [rocky]
+ok: [ubuntu]
+
+TASK [Copy Chrony configuration file] *********************************************************************************************
+ok: [ubuntu]
+ok: [debian]
+ok: [suse]
+ok: [rocky]
+
+TASK [Start and enable Chrony service] ********************************************************************************************
+ok: [ubuntu]
+ok: [debian]
+ok: [rocky]
+ok: [suse]
+
+PLAY RECAP ************************************************************************************************************************
+debian                     : ok=5    changed=0    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+rocky                      : ok=5    changed=0    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+suse                       : ok=5    changed=0    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+ubuntu                     : ok=5    changed=0    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+
+
 ```
 

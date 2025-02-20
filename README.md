@@ -20,7 +20,7 @@
 
 10. [Partie 10:Ansible par la pratique (15) – Cibles hétérogènes](#partie-10ansible-par-la-pratique-15--cibles-hétérogènes)
 
-11. [Partie 11: Ansible par la pratique (16) – Gestion des erreurs](#partie-11-ansible-par-la-pratique-16--gestion-des-erreurs)
+11. [Partie 11: Ansible par la pratique (16) – Jinja & Templates](#partie-11-ansible-par-la-pratique-16--jinja--templates)
 ---
 
 
@@ -602,42 +602,7 @@ rocky | CHANGED => {
     "changed": true,
     "path": "/tmp/test3.txt",
     "state": "absent"
-}
-[vagrant@ansible ema]$ ansible testing -m file -a "dest=/tmp/test3.txt state=absent"
-debian | SUCCESS => {
-    "changed": false,
-    "path": "/tmp/test3.txt",
-    "state": "absent"
-}
-suse | SUCCESS => {
-    "changed": false,
-    "path": "/tmp/test3.txt",
-    "state": "absent"
-}
-rocky | SUCCESS => {
-    "changed": false,
-    "path": "/tmp/test3.txt",
-    "state": "absent"
-}
-```
-
-Afficher l’espace utilisé par la partition principale sur tous les Target Hosts. 
-```bash
-[vagrant@ansible ema]$ ansible testing -m shell -a "df -h /"
-debian | CHANGED | rc=0 >>
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda3       124G  2.3G  115G   2% /
-suse | CHANGED | rc=0 >>
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda3       124G  2.8G  118G   3% /
-rocky | CHANGED | rc=0 >>
-Filesystem                  Size  Used Avail Use% Mounted on
-/dev/mapper/rl_rocky9-root   70G  2.4G   68G   4% /
-```
----
----
----
-
+}Partie 11: Ansible par la pratique (16) – Jinja & Templates] (#partie-11-ansible-par-la-pratique-16--jinja--templates)
 # Partie 5: Ansible par la pratique (10) – Un serveur web simple
 
 ## Exercice

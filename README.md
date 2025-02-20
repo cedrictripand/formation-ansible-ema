@@ -19,6 +19,8 @@
 9. [Partie 9: Ansible par la pratique (14) – Facts et variables implicites](#partie-9-ansible-par-la-pratique-14--facts-et-variables-implicites)
 
 10. [Partie 10:Ansible par la pratique (15) – Cibles hétérogènes](#partie-10ansible-par-la-pratique-15--cibles-hétérogènes)
+
+11. [Partie 11: Ansible par la pratique (16) – Jinja & Templates]
 ---
 
 

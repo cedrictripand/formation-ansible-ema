@@ -20,7 +20,7 @@
 
 10. [Partie 10:Ansible par la pratique (15) – Cibles hétérogènes](#partie-10ansible-par-la-pratique-15--cibles-hétérogènes)
 
-11. [Partie 11: Ansible par la pratique (16) – Jinja & Templates]
+11. [Partie 11: Ansible par la pratique (16) – Jinja & Templates] (#partie-11-ansible-par-la-pratique-16--jinja--templates)
 ---
 
 

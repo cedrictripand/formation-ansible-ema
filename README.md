@@ -602,7 +602,12 @@ rocky | CHANGED => {
     "changed": true,
     "path": "/tmp/test3.txt",
     "state": "absent"
-}Partie 11: Ansible par la pratique (16) – Jinja & Templates] (#partie-11-ansible-par-la-pratique-16--jinja--templates)
+}
+```
+---
+---
+---
+
 # Partie 5: Ansible par la pratique (10) – Un serveur web simple
 
 ## Exercice

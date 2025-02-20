@@ -22,12 +22,6 @@
 ---
 
 
-
-
-
-
-
-
 # Partie 1: Ansible par la Pratique – Installation
 
 ## Exercice 1 : Installation d'Ansible via le Gestionnaire de Paquets
@@ -1428,7 +1422,9 @@ debian                     : ok=2    changed=0    unreachable=0    failed=0    s
 rocky                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 suse                       : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 ```
-
+---
+---
+---
 
 # Partie 10:Ansible par la pratique (15) – Cibles hétérogènes
 
@@ -1713,3 +1709,124 @@ ubuntu                     : ok=5    changed=0    unreachable=0    failed=0    s
 
 ```
 
+---
+---
+---
+
+# Partie 11: Ansible par la pratique (16) – Jinja & Templates
+
+## Exercice
+
+Go dans le répertoire playbook :
+```bash
+cd ansible/projets/ema/playbooks/
+```
+
+Je creer un template chrony.conf.j2 qui contient la configuration Chrony :
+```jinja
+{# templates/chrony.conf.j2 #}
+# {{ chrony_conf_path }}
+server 0.fr.pool.ntp.org iburst
+server 1.fr.pool.ntp.org iburst
+server 2.fr.pool.ntp.org iburst
+server 3.fr.pool.ntp.org iburst
+driftfile /var/lib/chrony/drift
+makestep 1.0 3
+rtcsync
+logdir /var/log/chrony
+```
+
+Je creer des variables pour le playbook chrony.yml :
+```yml
+---
+chrony_package:
+  Debian: chrony
+  RedHat: chrony
+  Suse: chrony
+
+chrony_service:
+  Debian: chrony
+  RedHat: chronyd
+  Suse: chronyd
+
+chrony_conf_path:
+  Debian: /etc/chrony/chrony.conf
+  RedHat: /etc/chrony.conf
+  Suse: /etc/chrony.conf
+```
+
+Je creer un playbook chrony.yml qui installe et configure Chrony sur les machines Debian/Ubuntu, Rocky Linux et openSUSE Leap :
+```yml
+---
+- hosts: all
+  become: true
+  vars_files:
+    - vars/chrony_vars.yml
+  tasks:
+    - name: Install Chrony
+      package:
+        name: "{{ chrony_package[ansible_os_family] }}"
+        state: present
+
+    - name: Start and enable Chrony service
+      service:
+        name: "{{ chrony_service[ansible_os_family] }}"
+        state: started
+        enabled: true
+
+    - name: Configure Chrony
+      template:
+        src: templates/chrony.conf.j2
+        dest: "{{ chrony_conf_path[ansible_os_family] }}"
+      notify: Restart Chrony
+
+  handlers:
+    - name: Restart Chrony
+      service:
+        name: "{{ chrony_service[ansible_os_family] }}"
+        state: restarted
+```
+
+Voici le résultat de l'exécution du playbook chrony.yml :
+```bash
+[vagrant@ansible playbooks]$ ansible-playbook chrony.yml
+
+PLAY [all] ************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************
+ok: [debian]
+ok: [ubuntu]
+ok: [rocky]
+ok: [suse]
+
+TASK [Install Chrony] *************************************************************************************************************
+changed: [debian]
+changed: [ubuntu]
+ok: [rocky]
+changed: [suse]
+
+TASK [Start and enable Chrony service] ********************************************************************************************
+ok: [debian]
+ok: [ubuntu]
+ok: [rocky]
+changed: [suse]
+
+TASK [Configure Chrony] ***********************************************************************************************************
+changed: [ubuntu]
+changed: [debian]
+changed: [suse]
+changed: [rocky]
+
+RUNNING HANDLER [Restart Chrony] **************************************************************************************************
+changed: [debian]
+changed: [ubuntu]
+changed: [rocky]
+changed: [suse]
+
+PLAY RECAP ************************************************************************************************************************
+debian                     : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+rocky                      : ok=5    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+suse                       : ok=5    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+ubuntu                     : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+```
